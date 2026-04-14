@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solicitud de Cancelación de Factura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #f5f2ec;
+      --surface:   #ffffff;
+      --surface2:  #faf8f4;
+      --border:    #e2ddd4;
+      --accent:    #1a3a2a;
+      --accent2:   #2d6a4f;
+      --accent-lt: #d4e9dd;
+      --red:       #c0392b;
+      --red-lt:    #fdedec;
+      --amber:     #e8a020;
+      --amber-lt:  #fef3dc;
+      --text:      #1c1c1a;
+      --muted:     #7a7568;
+      --subtle:    #b8b2a7;
+      --radius:    10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Epilogue', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      padding: 48px 16px 80px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--red) 0%, var(--amber) 100%);
+    }
+
+    .container { max-width: 680px; margin: 0 auto; animation: fadeUp 0.45s ease both; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .header { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 36px; }
+
+    .header-icon {
+      width: 52px; height: 52px;
+      background: var(--red-lt);
+      border: 1.5px solid rgba(192,57,43,0.2);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0; margin-top: 4px;
+    }
+
+    .header-text h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px; font-weight: 800; line-height: 1.15;
+      color: var(--accent); margin-bottom: 6px;
+    }
+
+    .header-text p { font-size: 14px; color: var(--muted); line-height: 1.55; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .card-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 15px 28px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    .card-header span {
+      font-family: 'Syne', sans-serif;
+      font-size: 11.5px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+    }
+
+    .card-body { padding: 28px; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid .full { grid-column: 1 / -1; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+
+    label {
+      font-size: 11.5px; font-weight: 500;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+    }
+
+    label .req { color: var(--red); margin-left: 2px; }
+
+    input, select, textarea {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Epilogue', sans-serif;
+      font-size: 14px; font-weight: 400;
+      padding: 11px 14px;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      outline: none; width: 100%; -webkit-appearance: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 3px rgba(45,106,79,0.1);
+      background: #fff;
+    }
+
+    input.error, select.error {
+      border-color: var(--red) !important;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.08) !important;
+    }
+
+    input::placeholder, textarea::placeholder { color: var(--subtle); }
+
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7568' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    .input-prefix { position: relative; }
+    .input-prefix span {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px; color: var(--muted); pointer-events: none;
+    }
+    .input-prefix input { padding-left: 28px; }
+
+    /* Upload */
+    .upload-zone {
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.18s, background 0.18s;
+      position: relative;
+      background: var(--bg);
+    }
+
+    .upload-zone:hover { border-color: var(--accent2); background: #f0f7f3; }
+    .upload-zone.has-file { border-color: var(--accent2); background: #f0f7f3; border-style: solid; }
+    .upload-zone.error { border-color: var(--red) !important; background: #fff8f7; }
+
+    .upload-zone input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+      width: 100%; height: 100%; border: none; padding: 0; background: none; box-shadow: none;
+    }
+
+    .upload-icon { font-size: 22px; margin-bottom: 6px; }
+    .upload-label { font-size: 13px; font-weight: 500; color: var(--accent2); margin-bottom: 3px; }
+    .upload-hint { font-size: 11.5px; color: var(--subtle); }
+    .upload-filename { font-size: 12.5px; color: var(--accent); font-weight: 500; margin-top: 6px; word-break: break-all; }
+
+    .badge-opcional {
+      display: inline-block; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: var(--amber-lt); color: #8a5a00;
+      border: 1px solid rgba(232,160,32,0.25);
+      padding: 2px 8px; border-radius: 100px;
+      margin-left: 6px; vertical-align: middle;
+    }
+
+    .webhook-note {
+      background: var(--amber-lt);
+      border: 1px solid rgba(232,160,32,0.25);
+      border-radius: var(--radius);
+      padding: 11px 16px; font-size: 12.5px; color: #7a5a10;
+      margin-bottom: 22px; line-height: 1.5;
+    }
+    .webhook-note code {
+      font-family: monospace;
+      background: rgba(232,160,32,0.15);
+      padding: 1px 5px; border-radius: 4px;
+    }
+
+    .btn-submit {
+      width: 100%; padding: 15px;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: var(--radius);
+      font-family: 'Syne', sans-serif;
+      font-size: 14px; font-weight: 700; letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+      margin-top: 8px;
+    }
+
+    .btn-submit:hover { background: var(--accent2); box-shadow: 0 4px 16px rgba(26,58,42,0.25); }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .status {
+      display: none; border-radius: var(--radius);
+      padding: 14px 18px; font-size: 14px; line-height: 1.5;
+      margin-top: 16px; gap: 12px; align-items: flex-start;
+      animation: fadeUp 0.3s ease both;
+    }
+    .status.success { display: flex; background: #eafaf1; border: 1px solid #a9dfbf; color: #1e8449; }
+    .status.error   { display: flex; background: var(--red-lt); border: 1px solid #f1948a; color: var(--red); }
+
+    .status-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+    .status-text strong { display: block; font-weight: 600; margin-bottom: 2px; }
+
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle; margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .footer { text-align: center; font-size: 12px; color: var(--subtle); margin-top: 28px; }
+
+    .validation-msg {
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--red-lt);
+      border: 1px solid rgba(192,57,43,0.3);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--red);
+      margin-top: 16px;
+      animation: fadeUp 0.2s ease both;
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--red);
+      display: none;
+    }
+
+    input.error + .field-hint,
+    select.error + .field-hint { display: block; }
+
+    @media (max-width: 540px) {
+      .grid { grid-template-columns: 1fr; }
+      .card-body { padding: 20px 16px; }
+      .header-text h1 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-icon">🧾</div>
+    <div class="header-text">
+      <h1>Cancelación<br>de Factura</h1>
+      <p>Completa todos los campos y adjunta los documentos requeridos. La solicitud será enviada automáticamente al área correspondiente y a tu regional.</p>
+    </div>
+  </div>
+
+  <!-- Sucursal -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:#2d6a4f"></div>
+      <span>Sucursal solicitante</span>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Sucursal <span class="req">*</span></label>
+        <select id="sucursal" required>
+          <option value="" disabled selected>Selecciona tu sucursal</option>
+          <option>Acayucan</option>
+          <option>Acerofertas</option>
+          <option>Cancún</option>
+          <option>Cárdel</option>
+          <option>Cárdenas</option>
+          <option>Centro</option>
+          <option>Coatzacoalcos 1</option>
+          <option>Coatzacoalcos 2</option>
+          <option>Comalcalco</option>
+          <option>Córdoba 1</option>
+          <option>Córdoba 2</option>
+          <option>Cosamaloapan</option>
+          <option>Golfo</option>
+          <option>Matriz</option>
+          <option>Mérida 1</option>
+          <option>Mérida 2</option>
+          <option>Mérida 3</option>
+          <option>Mérida 4</option>
+          <option>Minatitlán</option>
+          <option>Orizaba 1</option>
+          <option>Orizaba 2</option>
+          <option>Playa del Carmen</option>
+          <option>Poza Rica</option>
+          <option>Puebla 2</option>
+          <option>San Andrés Tuxtla 1</option>
+          <option>San Andrés Tuxtla 2</option>
+          <option>Sur</option>
+          <option>Tejería</option>
+          <option>Tierra Blanca</option>
+          <option>Tuxtepec 1</option>
+          <option>Tuxtepec 2</option>
+          <option>Tuxtla Gtz. Chiapas 1</option>
+          <option>Tuxtla Gtz. Chiapas 2</option>
+          <option>Tuxtla Gtz. Chiapas 3</option>
+          <option>Villahermosa 1</option>
+          <option>Villahermosa 2</option>
+          <option>Xalapa</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cliente -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:#e8a020"></div>
+      <span>Datos del cliente</span>
+    </div>
+    <div class="card-body">
+      <div class="grid">
+        <div class="field">
+          <label>Número de cliente <span class="req">*</span></label>
+          <input type="text" id="num_cliente" placeholder="Código interno" required/>
+        </div>
+        <div class="field">
+          <label>Nombre del cliente <span class="req">*</span></label>
+          <input type="text" id="nombre_cliente" placeholder="Nombre o razón social" required/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Factura -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:#c0392b"></div>
+      <span>Datos de la factura a cancelar</span>
+    </div>
+    <div class="card-body">
+      <div class="grid">
+        <div class="field">
+          <label>Folio de factura <span class="req">*</span></label>
+          <input type="text" id="folio" placeholder="Ej. F-2025-00123" required/>
+        </div>
+        <div class="field">
+          <label>Fecha de factura <span class="req">*</span></label>
+          <input type="date" id="fecha_factura" required/>
+        </div>
+        <div class="field full">
+          <label>Monto de la factura (MXN) <span class="req">*</span></label>
+          <div class="input-prefix">
+            <span>$</span>
+            <input type="number" id="monto" placeholder="0.00" min="0" step="0.01" required/>
+          </div>
+        </div>
+        <div class="field full">
+          <label>Motivo de cancelación <span class="req">*</span></label>
+          <select id="motivo" required>
+            <option value="" disabled selected>Selecciona el motivo</option>
+            <option>Error en forma de pago</option>
+            <option>Cambio o devolución de mercancía</option>
+            <option>Error en descripción o clave de producto</option>
+            <option>Facturación duplicada</option>
+            <option>Error en datos fiscales del cliente (RFC, razón social o régimen)</option>
+            <option>Error en monto o precio unitario</option>
+            <option>Pedido cancelado por el cliente</option>
+            <option>Factura emitida a cliente incorrecto</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Documentos -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:#7a7568"></div>
+      <span>Documentos adjuntos</span>
+    </div>
+    <div class="card-body">
+      <div class="grid">
+        <div class="field full">
+          <label>Factura escaneada con firma de responsables <span class="req">*</span></label>
+          <div class="upload-zone" id="zone-factura">
+            <input type="file" id="archivo_factura" accept=".pdf,.jpg,.jpeg,.png" onchange="onFileChange('factura')"/>
+            <div class="upload-icon">📄</div>
+            <div class="upload-label">Selecciona o arrastra el archivo</div>
+            <div class="upload-hint">PDF, JPG o PNG — máx. 10 MB</div>
+            <div class="upload-filename" id="name-factura"></div>
+          </div>
+        </div>
+        <div class="field full">
+          <label>Vale de surtido firmado <span class="badge-opcional">Si aplica</span></label>
+          <div class="upload-zone" id="zone-vale">
+            <input type="file" id="archivo_vale" accept=".pdf,.jpg,.jpeg,.png" onchange="onFileChange('vale')"/>
+            <div class="upload-icon">📋</div>
+            <div class="upload-label">Selecciona o arrastra el archivo</div>
+            <div class="upload-hint">PDF, JPG o PNG — máx. 10 MB</div>
+            <div class="upload-filename" id="name-vale"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Observaciones + envío -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:#b8b2a7"></div>
+      <span>Observaciones y envío</span>
+    </div>
+    <div class="card-body">
+
+      <div class="webhook-note">
+        🔗 <strong>Webhook n8n:</strong> Edita <code>N8N_WEBHOOK_URL</code> en el script con la URL de tu trigger.
+      </div>
+
+      <div class="field">
+        <label>Observaciones / Anotaciones</label>
+        <textarea id="observaciones" placeholder="Contexto adicional, acuerdos con el cliente, referencias internas…"></textarea>
+      </div>
+
+      <button class="btn-submit" id="btnEnviar" onclick="enviar()">
+        Enviar solicitud de cancelación
+      </button>
+
+      <div class="validation-msg" id="validationMsg">
+        <span style="font-size:16px;flex-shrink:0">⚠️</span>
+        <div><strong style="display:block;font-weight:600;margin-bottom:2px">Faltan campos obligatorios</strong>
+        Los campos marcados en rojo son requeridos. Revisa que hayas adjuntado la factura escaneada.</div>
+      </div>
+
+      <div class="status success" id="statusOk">
+        <span class="status-icon">✓</span>
+        <div class="status-text">
+          <strong>Solicitud enviada correctamente</strong>
+          Fue recibida y notificada al área de facturación y a tu regional. Recibirás confirmación por correo.
+        </div>
+      </div>
+
+      <div class="status error" id="statusErr">
+        <span class="status-icon">✕</span>
+        <div class="status-text">
+          <strong id="errMsg">Error al enviar la solicitud</strong>
+          Verifica tu conexión o la URL del webhook e intenta nuevamente.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">Uso interno · Facturación · Procesado vía n8n</div>
+
+</div>
+
+<script>
+  // ─────────────────────────────────────────
+  //  ⚙️  CONFIGURACIÓN — edita antes de subir
+  // ─────────────────────────────────────────
+  const N8N_WEBHOOK_URL = "https://TU-INSTANCIA-N8N.com/webhook/cancelacion-factura";
+  const MAX_FILE_MB = 10;
+
+  // Tabla de regionales por sucursal
+  // n8n usará el campo "correo_regional" del payload para poner en CC
+  const REGIONALES = {
+    "Matriz":                 { nombre: "Juan Carlos Guadarrama", correo: "jguadarrama@pylsa.com" },
+    "Cárdenas":               { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Comalcalco":             { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Villahermosa 1":         { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Villahermosa 2":         { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Tuxtla Gtz. Chiapas 1":  { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Tuxtla Gtz. Chiapas 2":  { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Tuxtla Gtz. Chiapas 3":  { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Mérida 1":               { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Mérida 2":               { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Mérida 3":               { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Mérida 4":               { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Cancún":                 { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Playa del Carmen":       { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
+    "Minatitlán":             { nombre: "María Alejandra Cruz Plata", correo: "acruz@pylsa.com" },
+    "San Andrés Tuxtla 1":    { nombre: "María Alejandra Cruz Plata", correo: "acruz@pylsa.com" },
+    "San Andrés Tuxtla 2":    { nombre: "María Alejandra Cruz Plata", correo: "acruz@pylsa.com" },
+    "Coatzacoalcos 1":        { nombre: "María Alejandra Cruz Plata", correo: "acruz@pylsa.com" },
+    "Coatzacoalcos 2":        { nombre: "María Alejandra Cruz Plata", correo: "acruz@pylsa.com" },
+    "Acayucan":               { nombre: "María Alejandra Cruz Plata", correo: "acruz@pylsa.com" },
+    "Puebla 2":               { nombre: "María Alejandra Cruz Plata", correo: "acruz@pylsa.com" },
+    "Acerofertas":            { nombre: "Maribel Velázquez García",   correo: "mvelazquez@pylsa.com" },
+    "Centro":                 { nombre: "Maribel Velázquez García",   correo: "mvelazquez@pylsa.com" },
+    "Tierra Blanca":          { nombre: "Maribel Velázquez García",   correo: "mvelazquez@pylsa.com" },
+    "Tuxtepec 1":             { nombre: "Maribel Velázquez García",   correo: "mvelazquez@pylsa.com" },
+    "Tuxtepec 2":             { nombre: "Maribel Velázquez García",   correo: "mvelazquez@pylsa.com" },
+    "Tejería":                { nombre: "Maribel Velázquez García",   correo: "mvelazquez@pylsa.com" },
+    "Cárdel":                 { nombre: "Maribel Velázquez García",   correo: "mvelazquez@pylsa.com" },
+    "Cosamaloapan":           { nombre: "Maribel Velázquez García",   correo: "mvelazquez@pylsa.com" },
+    "Sur":                    { nombre: "Maribel Velázquez García",   correo: "mvelazquez@pylsa.com" },
+    "Golfo":                  { nombre: "Maribel Velázquez García",   correo: "mvelazquez@pylsa.com" },
+    "Córdoba 1":              { nombre: "Milton Carlos Juárez Sánchez", correo: "jmilton@pylsa.com" },
+    "Córdoba 2":              { nombre: "Milton Carlos Juárez Sánchez", correo: "jmilton@pylsa.com" },
+    "Orizaba 1":              { nombre: "Milton Carlos Juárez Sánchez", correo: "jmilton@pylsa.com" },
+    "Orizaba 2":              { nombre: "Milton Carlos Juárez Sánchez", correo: "jmilton@pylsa.com" },
+    "Xalapa":                 { nombre: "Milton Carlos Juárez Sánchez", correo: "jmilton@pylsa.com" },
+    "Poza Rica":              { nombre: "Milton Carlos Juárez Sánchez", correo: "jmilton@pylsa.com" },
+  };
+  // ─────────────────────────────────────────
+
+  function onFileChange(tipo) {
+    const input = document.getElementById(`archivo_${tipo}`);
+    const zone  = document.getElementById(`zone-${tipo}`);
+    const label = document.getElementById(`name-${tipo}`);
+    const file  = input.files[0];
+    if (!file) return;
+    if (file.size > MAX_FILE_MB * 1024 * 1024) {
+      alert(`El archivo supera los ${MAX_FILE_MB} MB permitidos.`);
+      input.value = '';
+      return;
+    }
+    zone.classList.add('has-file');
+    zone.classList.remove('error');
+    label.textContent = '✓ ' + file.name;
+  }
+
+  function fileToBase64(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload  = () => res(r.result.split(',')[1]);
+      r.onerror = () => rej(new Error('Error al leer archivo'));
+      r.readAsDataURL(file);
+    });
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+  }
+
+  async function enviar() {
+    clearErrors();
+    document.getElementById('statusOk').style.display = 'none';
+    document.getElementById('statusErr').style.display = 'none';
+    document.getElementById('validationMsg').style.display = 'none';
+
+    let valido = true;
+    let primerError = null;
+
+    ['sucursal','num_cliente','nombre_cliente','folio','fecha_factura','monto','motivo'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el.value.trim()) {
+        el.classList.add('error');
+        if (!primerError) primerError = el;
+        valido = false;
+      }
+    });
+
+    const archivoFactura = document.getElementById('archivo_factura').files[0];
+    if (!archivoFactura) {
+      const zone = document.getElementById('zone-factura');
+      zone.classList.add('error');
+      if (!primerError) primerError = zone;
+      valido = false;
+    }
+
+    if (!valido) {
+      document.getElementById('validationMsg').style.display = 'flex';
+      primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    const btn = document.getElementById('btnEnviar');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Enviando…';
+
+    try {
+      const facturaB64   = await fileToBase64(archivoFactura);
+      const archivoVale  = document.getElementById('archivo_vale').files[0];
+      const valeB64      = archivoVale ? await fileToBase64(archivoVale) : null;
+
+      // Detectar factura de mes anterior (para revisión manual en n8n)
+      const hoy       = new Date();
+      const fechaFact = new Date(document.getElementById('fecha_factura').value + 'T00:00:00');
+      const esMesAnterior = (
+        fechaFact.getFullYear() < hoy.getFullYear() ||
+        (fechaFact.getFullYear() === hoy.getFullYear() && fechaFact.getMonth() < hoy.getMonth())
+      );
+
+      const sucursal = document.getElementById('sucursal').value;
+      const regional = REGIONALES[sucursal] || { nombre: 'Sin asignar', correo: '' };
+
+      const payload = {
+        timestamp:        new Date().toISOString(),
+        sucursal:         sucursal,
+        regional_nombre:  regional.nombre,
+        correo_regional:  regional.correo,
+        num_cliente:      document.getElementById('num_cliente').value.trim(),
+        nombre_cliente:   document.getElementById('nombre_cliente').value.trim(),
+        folio_factura:    document.getElementById('folio').value.trim(),
+        fecha_factura:    document.getElementById('fecha_factura').value,
+        monto:            parseFloat(document.getElementById('monto').value),
+        motivo:           document.getElementById('motivo').value,
+        observaciones:    document.getElementById('observaciones').value.trim(),
+        mes_anterior:     esMesAnterior,
+        archivos: {
+          factura_escaneada: {
+            nombre: archivoFactura.name,
+            tipo:   archivoFactura.type,
+            base64: facturaB64
+          },
+          vale_surtido: valeB64 ? {
+            nombre: archivoVale.name,
+            tipo:   archivoVale.type,
+            base64: valeB64
+          } : null
+        }
+      };
+
+      const res = await fetch(N8N_WEBHOOK_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        document.getElementById('statusOk').style.display = 'flex';
+        ['sucursal','num_cliente','nombre_cliente','folio','fecha_factura','monto','motivo','observaciones'].forEach(id => {
+          const el = document.getElementById(id);
+          el.value = '';
+          if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        });
+        ['factura','vale'].forEach(tipo => {
+          document.getElementById(`archivo_${tipo}`).value = '';
+          document.getElementById(`zone-${tipo}`).classList.remove('has-file','error');
+          document.getElementById(`name-${tipo}`).textContent = '';
+        });
+      } else {
+        document.getElementById('errMsg').textContent = `Error del servidor (${res.status}). Intenta nuevamente.`;
+        document.getElementById('statusErr').style.display = 'flex';
+      }
+
+    } catch(e) {
+      document.getElementById('errMsg').textContent = 'No se pudo conectar. Verifica tu conexión e intenta nuevamente.';
+      document.getElementById('statusErr').style.display = 'flex';
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Enviar solicitud de cancelación';
+  }
+
+  // Drag & drop visual feedback
+  document.querySelectorAll('.upload-zone').forEach(zone => {
+    zone.addEventListener('dragover',  e => { e.preventDefault(); zone.style.borderColor = 'var(--accent2)'; });
+    zone.addEventListener('dragleave', () => { zone.style.borderColor = ''; });
+    zone.addEventListener('drop',      e => { e.preventDefault(); zone.style.borderColor = ''; });
+  });
+</script>
+</body>
+</html>
