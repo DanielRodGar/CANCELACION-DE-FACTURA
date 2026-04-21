@@ -597,11 +597,10 @@
       const valeB64      = archivoVale ? await fileToBase64(archivoVale) : null;
 
       // Detectar factura de mes anterior (para revisión manual en n8n)
-      const hoy       = new Date();
-      const fechaFact = new Date(document.getElementById('fecha_factura').value + 'T00:00:00');
-      const esMesAnterior = (
-        fechaFact.getFullYear() < hoy.getFullYear() ||
-        (fechaFact.getFullYear() === hoy.getFullYear() && fechaFact.getMonth() < hoy.getMonth())
+      const hoy = new Date();
+hoy.setHours(0, 0, 0, 0);
+const fechaFact = new Date(document.getElementById('fecha_factura').value + 'T12:00:00');
+const esMesAnterior = fechaFact < hoy;
       );
 
       const sucursal = document.getElementById('sucursal').value;
