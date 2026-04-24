@@ -153,7 +153,6 @@
     }
     .input-prefix input { padding-left: 28px; }
 
-    /* Upload */
     .upload-zone {
       border: 1.5px dashed var(--border);
       border-radius: var(--radius);
@@ -253,14 +252,8 @@
       animation: fadeUp 0.2s ease both;
     }
 
-    .field-hint {
-      font-size: 11px;
-      color: var(--red);
-      display: none;
-    }
-
-    input.error + .field-hint,
-    select.error + .field-hint { display: block; }
+    .field-hint { font-size: 11px; color: var(--red); display: none; }
+    input.error + .field-hint, select.error + .field-hint { display: block; }
 
     @media (max-width: 540px) {
       .grid { grid-template-columns: 1fr; }
@@ -280,7 +273,6 @@
     </div>
   </div>
 
-  <!-- Sucursal -->
   <div class="card">
     <div class="card-header">
       <div class="card-dot" style="background:#2d6a4f"></div>
@@ -333,7 +325,6 @@
     </div>
   </div>
 
-  <!-- Cliente -->
   <div class="card">
     <div class="card-header">
       <div class="card-dot" style="background:#e8a020"></div>
@@ -353,7 +344,6 @@
     </div>
   </div>
 
-  <!-- Factura -->
   <div class="card">
     <div class="card-header">
       <div class="card-dot" style="background:#c0392b"></div>
@@ -394,7 +384,6 @@
     </div>
   </div>
 
-  <!-- Documentos -->
   <div class="card">
     <div class="card-header">
       <div class="card-dot" style="background:#7a7568"></div>
@@ -426,17 +415,12 @@
     </div>
   </div>
 
-  <!-- Observaciones + envío -->
   <div class="card">
     <div class="card-header">
       <div class="card-dot" style="background:#b8b2a7"></div>
       <span>Observaciones y envío</span>
     </div>
     <div class="card-body">
-
-      <div class="webhook-note">
-        🔗 <strong>Webhook n8n:</strong> Edita <code>N8N_WEBHOOK_URL</code> en el script con la URL de tu trigger.
-      </div>
 
       <div class="field">
         <label>Observaciones / Anotaciones</label>
@@ -477,14 +461,9 @@
 </div>
 
 <script>
-  // ─────────────────────────────────────────
-  //  ⚙️  CONFIGURACIÓN — edita antes de subir
-  // ─────────────────────────────────────────
   const N8N_WEBHOOK_URL = "https://danielrodriguez.app.n8n.cloud/webhook/cancelacion-factura";
   const MAX_FILE_MB = 10;
 
-  // Tabla de regionales por sucursal
-  // n8n usará el campo "correo_regional" del payload para poner en CC
   const REGIONALES = {
     "Matriz":                 { nombre: "Juan Carlos Guadarrama", correo: "jguadarrama@pylsa.com" },
     "Cárdenas":               { nombre: "Erik Daniel Vargas Almeida", correo: "evargas@pylsa.com" },
@@ -524,7 +503,6 @@
     "Xalapa":                 { nombre: "Milton Carlos Juárez Sánchez", correo: "jmilton@pylsa.com" },
     "Poza Rica":              { nombre: "Milton Carlos Juárez Sánchez", correo: "jmilton@pylsa.com" },
   };
-  // ─────────────────────────────────────────
 
   function onFileChange(tipo) {
     const input = document.getElementById(`archivo_${tipo}`);
@@ -592,16 +570,14 @@
     btn.innerHTML = '<span class="spinner"></span>Enviando…';
 
     try {
-      const facturaB64   = await fileToBase64(archivoFactura);
-      const archivoVale  = document.getElementById('archivo_vale').files[0];
-      const valeB64      = archivoVale ? await fileToBase64(archivoVale) : null;
+      const facturaB64  = await fileToBase64(archivoFactura);
+      const archivoVale = document.getElementById('archivo_vale').files[0];
+      const valeB64     = archivoVale ? await fileToBase64(archivoVale) : null;
 
-      // Detectar factura de mes anterior (para revisión manual en n8n)
       const hoy = new Date();
-hoy.setHours(0, 0, 0, 0);
-const fechaFact = new Date(document.getElementById('fecha_factura').value + 'T12:00:00');
-const esMesAnterior = fechaFact < hoy;
-      );
+      hoy.setHours(0, 0, 0, 0);
+      const fechaFact = new Date(document.getElementById('fecha_factura').value + 'T12:00:00');
+      const esMesAnterior = fechaFact < hoy;
 
       const sucursal = document.getElementById('sucursal').value;
       const regional = REGIONALES[sucursal] || { nombre: 'Sin asignar', correo: '' };
@@ -665,7 +641,6 @@ const esMesAnterior = fechaFact < hoy;
     btn.innerHTML = 'Enviar solicitud de cancelación';
   }
 
-  // Drag & drop visual feedback
   document.querySelectorAll('.upload-zone').forEach(zone => {
     zone.addEventListener('dragover',  e => { e.preventDefault(); zone.style.borderColor = 'var(--accent2)'; });
     zone.addEventListener('dragleave', () => { zone.style.borderColor = ''; });
